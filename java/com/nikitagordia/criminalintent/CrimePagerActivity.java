@@ -12,8 +12,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.nikitagordia.criminalintent.CrimeListFragment.EXTRA_L;
+import static com.nikitagordia.criminalintent.CrimeListFragment.EXTRA_R;
+import static com.nikitagordia.criminalintent.CrimeListFragment.REQUEST_LEN;
 
 /**
  * Created by root on 20.11.17.
@@ -25,6 +31,7 @@ public class CrimePagerActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private CrimeLab mCrimes;
+    private int l, r;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,12 +42,15 @@ public class CrimePagerActivity extends AppCompatActivity {
 
         mViewPager = (ViewPager) findViewById(R.id.crime_view_pager);
         mCrimes = CrimeLab.get(this);
+        l = Integer.MAX_VALUE;
+        r = 0;
 
         FragmentManager fm = getSupportFragmentManager();
-        mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
+        mViewPager.setAdapter(new FragmentPagerAdapter(fm) {
             @Override
             public Fragment getItem(int position) {
                 Crime crime = mCrimes.getCrime(position);
+                updateResult(position);
                 return CrimeFragment.newInstance(crime.getId());
             }
 
@@ -51,6 +61,12 @@ public class CrimePagerActivity extends AppCompatActivity {
         });
 
         mViewPager.setCurrentItem(mCrimes.getCrimePos(crimeId));
+    }
+
+    private void updateResult(int pos) {
+        l = Math.min(l, pos);
+        r = Math.max(r, pos);
+        setResult(REQUEST_LEN, new Intent().putExtra(EXTRA_L, l).putExtra(EXTRA_R, r));
     }
 
     public static Intent newIntent(Context packageContext, UUID crimeId) {

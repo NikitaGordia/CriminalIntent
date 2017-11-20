@@ -30,11 +30,13 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
 
     public static final String TAG = "myTag";
+    public static final int REQUEST_LEN = 2;
+    public static final String EXTRA_L = "com.nikitagordia.len_L";
+    public static final String EXTRA_R = "com.nikitagordia.len_R";
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
-
-    private int lastUpdate;
+    private int boundL, boundR;
 
     @Nullable
     @Override
@@ -45,6 +47,7 @@ public class CrimeListFragment extends Fragment {
 
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        boundL = boundR = 0;
         updateUI();
 
         return view;
@@ -61,7 +64,16 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(CrimeLab.get(getActivity()).getCrimes());
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
-            mAdapter.notifyItemChanged(lastUpdate);
+            for (int i = boundL; i <= boundR; i++)
+            mAdapter.notifyItemChanged(i);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_LEN && data != null) {
+            boundL = data.getIntExtra(EXTRA_L, 0);
+            boundR = data.getIntExtra(EXTRA_R, 0);
         }
     }
 
@@ -70,7 +82,6 @@ public class CrimeListFragment extends Fragment {
         private TextView mTitleTextView, mDateTextView;
         private ImageButton button;
         private CheckBox mSolved;
-        private int position;
 
         private Crime mCrime;
 
@@ -102,9 +113,8 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            lastUpdate = position;
             Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_LEN);
         }
 
         public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -113,7 +123,6 @@ public class CrimeListFragment extends Fragment {
 
         public void bind(Crime crime, int position) {
             mCrime = crime;
-            this.position = position;
             mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(new Formatter().format("%1$tA, %1$tb %1$te, %1$tY ", mCrime.getDate()).toString());
             button.setEnabled(!mCrime.isSolved());
