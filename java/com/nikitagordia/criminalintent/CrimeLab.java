@@ -44,10 +44,22 @@ public class CrimeLab {
     }
 
     public Crime getCrime(UUID id) {
+        int x = getCrimePos(id);
+        if (x >= 0 && x < mCrimes.size()) return mCrimes.get(x); else return null;
+    }
+
+    public int getCrimePos(UUID id) {
         Crime require = new Crime();
         require.setId(id);
-        int x = Collections.binarySearch(mCrimes, require, new CrimeComp());
-        if (x >= 0 && x < mCrimes.size()) return mCrimes.get(x); else return null;
+        return Collections.binarySearch(mCrimes, require, new CrimeComp());
+    }
+
+    public Crime getCrime(int pos) {
+        return mCrimes.get(pos);
+    }
+
+    public int size() {
+        return mCrimes.size();
     }
 }
 
