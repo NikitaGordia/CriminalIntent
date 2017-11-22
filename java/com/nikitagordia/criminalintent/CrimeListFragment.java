@@ -61,11 +61,11 @@ public class CrimeListFragment extends Fragment {
 
     private void updateUI() {
         if (mAdapter == null) {
-            mAdapter = new CrimeAdapter(CrimeLab.get(getActivity()).getCrimes());
+            mAdapter = new CrimeAdapter(CrimeLab.get(getActivity()));
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
             for (int i = boundL; i <= boundR; i++)
-            mAdapter.notifyItemChanged(i);
+            mAdapter.notifyItemChanged(i); //TODO onChangeWindow
         }
     }
 
@@ -117,11 +117,7 @@ public class CrimeListFragment extends Fragment {
             startActivityForResult(intent, REQUEST_LEN);
         }
 
-        public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
-            this(inflater, parent, R.layout.list_item_crime);
-        }
-
-        public void bind(Crime crime, int position) {
+        public void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(mCrime.getFormatDate());
@@ -132,9 +128,9 @@ public class CrimeListFragment extends Fragment {
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
 
-        private List<Crime> mCrimes;
+        private CrimeLab mCrimes;
 
-        public CrimeAdapter(List<Crime> crimes) {
+        public CrimeAdapter(CrimeLab crimes) {
             mCrimes = crimes;
         }
 
@@ -146,8 +142,7 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(CrimeHolder holder, int position) {
-            Crime crime = mCrimes.get(position);
-            holder.bind(crime, position);
+            holder.bind(mCrimes.getCrime(mCrimes.getListPos(position)));
         }
 
         @Override
@@ -157,7 +152,7 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            return (mCrimes.get(position).isRequiresPolice() ? 1 : 0);
+            return (mCrimes.getCrime(mCrimes.getListPos(position)).isRequiresPolice() ? 1 : 0);
         }
     }
 }

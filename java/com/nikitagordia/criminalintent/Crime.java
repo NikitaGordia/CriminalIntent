@@ -2,7 +2,7 @@ package com.nikitagordia.criminalintent;
 
 import java.util.Date;
 import java.util.Formatter;
-import java.util.UUID;
+
 
 /**
  * Created by root on 16.11.17.
@@ -10,25 +10,24 @@ import java.util.UUID;
 
 public class Crime {
 
-    private static Formatter f;
+    private static int CNT = 0;
 
-    private UUID mId;
+    private int mId;
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
     private boolean mRequiresPolice;
 
     public Crime() {
-        f = new Formatter(new StringBuffer());
-        mId = UUID.randomUUID();
+        mId = CNT++;
         mDate = new Date();
     }
 
-    public UUID getId() {
+    public int getId() {
         return mId;
     }
 
-    public void setId(UUID id) {
+    public void setId(int id) {
         mId = id;
     }
 

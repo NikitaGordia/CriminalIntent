@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
+
 
 /**
  * Created by root on 18.11.17.
@@ -17,9 +17,11 @@ import java.util.UUID;
 
 public class CrimeLab {
 
+    private static final int SIZE = 10000;
     private static CrimeLab sCrimeLab;
 
-    private List<Crime> mCrimes;
+    private Crime[] mCrimes;
+    private int n;
 
     public static CrimeLab get(Context context) {
         if (sCrimeLab == null)
@@ -28,48 +30,38 @@ public class CrimeLab {
     }
 
     private CrimeLab(Context context) {
-        mCrimes = new ArrayList();
+        mCrimes = new Crime[SIZE];
         Random r = new Random();
-        for (int i = 1; i <= 100; i++) {
-            Crime crime = new Crime();
-            crime.setDate(new Date(1504990800000L + Math.abs(r.nextLong()) % 10000000000L));
-            crime.setSolved(r.nextInt(4) == 0);
-            crime.setRequiresPolice(r.nextInt(5) == 0);
-            mCrimes.add(crime);
-        }
-        Collections.sort(mCrimes, new CrimeComp());
-        for (int i = 0; i < mCrimes.size(); i++)
-            mCrimes.get(i).setTitle("Crime #" + (i + 1));
+        n = 25;
+        initCrimes();
     }
 
-    public List<Crime> getCrimes() {
-        return mCrimes;
+    public int getListPos(int pos) {
+        return n - pos - 1;
     }
 
-    public Crime getCrime(UUID id) {
-        int x = getCrimePos(id);
-        if (x >= 0 && x < mCrimes.size()) return mCrimes.get(x); else return null;
-    }
-
-    public int getCrimePos(UUID id) {
-        Crime require = new Crime();
-        require.setId(id);
-        return Collections.binarySearch(mCrimes, require, new CrimeComp());
+    public void add(Crime crime) {
+        mCrimes[n++] = crime;
     }
 
     public Crime getCrime(int pos) {
-        return mCrimes.get(pos);
+        return mCrimes[pos];
     }
 
     public int size() {
-        return mCrimes.size();
+        return n;
     }
-}
 
-class CrimeComp implements Comparator<Crime> {
-
-    @Override
-    public int compare(Crime crime, Crime t1) {
-        return crime.getId().compareTo(t1.getId());
+    private void initCrimes() {
+        long prevTime = 1504990800000L;
+        Random r = new Random();
+        for (int i = 0; i < n; i++) {
+            Crime crime = new Crime();
+            crime.setTitle("Crime #" + i);
+            crime.setDate(new Date(prevTime + Math.abs(r.nextLong()) % 10000000000L));
+            crime.setSolved(r.nextInt(4) == 0);
+            crime.setRequiresPolice(r.nextInt(5) == 0);
+            mCrimes[i] = crime;
+        }
     }
 }

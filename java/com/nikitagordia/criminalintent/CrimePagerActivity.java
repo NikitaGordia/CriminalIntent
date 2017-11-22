@@ -7,18 +7,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
 
 import static com.nikitagordia.criminalintent.CrimeListFragment.EXTRA_L;
 import static com.nikitagordia.criminalintent.CrimeListFragment.EXTRA_R;
@@ -42,7 +34,7 @@ public class CrimePagerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crime_pager);
 
-        UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
+        int crimeId = getIntent().getIntExtra(EXTRA_CRIME_ID, 0);
 
         mViewPager = (ViewPager) findViewById(R.id.crime_view_pager);
         toLast = (Button) findViewById(R.id.to_last_button);
@@ -88,9 +80,8 @@ public class CrimePagerActivity extends AppCompatActivity {
 
             @Override
             public Fragment getItem(int position) {
-                Crime crime = mCrimes.getCrime(position);
                 updateResult(position);
-                return CrimeFragment.newInstance(crime.getId());
+                return CrimeFragment.newInstance(mCrimes.getListPos(position));
             }
 
             @Override
@@ -99,7 +90,7 @@ public class CrimePagerActivity extends AppCompatActivity {
             }
         });
 
-        goToItem(mCrimes.getCrimePos(crimeId));
+        goToItem(mCrimes.getListPos(crimeId));
     }
 
     private void updateResult(int pos) {
@@ -108,7 +99,7 @@ public class CrimePagerActivity extends AppCompatActivity {
         setResult(REQUEST_LEN, new Intent().putExtra(EXTRA_L, l).putExtra(EXTRA_R, r));
     }
 
-    public static Intent newIntent(Context packageContext, UUID crimeId) {
+    public static Intent newIntent(Context packageContext, int crimeId) {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
         intent.putExtra(EXTRA_CRIME_ID, crimeId);
         return intent;
