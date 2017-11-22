@@ -1,6 +1,7 @@
 package com.nikitagordia.criminalintent;
 
 import java.util.Date;
+import java.util.Formatter;
 import java.util.UUID;
 
 /**
@@ -9,6 +10,8 @@ import java.util.UUID;
 
 public class Crime {
 
+    private static Formatter f;
+
     private UUID mId;
     private String mTitle;
     private Date mDate;
@@ -16,6 +19,7 @@ public class Crime {
     private boolean mRequiresPolice;
 
     public Crime() {
+        f = new Formatter(new StringBuffer());
         mId = UUID.randomUUID();
         mDate = new Date();
     }
@@ -54,6 +58,14 @@ public class Crime {
 
     public boolean isRequiresPolice() {
         return mRequiresPolice;
+    }
+
+    public String getFormatDate() {
+        return new Formatter().format("%1$tA, %1$tb %1$te, %1$tY ", mDate).toString();
+    }
+
+    public String getTime() {
+        return new Formatter().format("%1$tH:%1$tM", mDate).toString();
     }
 
     public void setRequiresPolice(boolean requiresPolice) {

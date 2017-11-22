@@ -11,6 +11,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,6 +34,7 @@ public class CrimePagerActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private CrimeLab mCrimes;
+    private Button toLast, toFirst;
     private int l, r;
 
     @Override
@@ -41,12 +45,47 @@ public class CrimePagerActivity extends AppCompatActivity {
         UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
 
         mViewPager = (ViewPager) findViewById(R.id.crime_view_pager);
+        toLast = (Button) findViewById(R.id.to_last_button);
+        toFirst = (Button) findViewById(R.id.to_first_button);
+
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                updateButtons(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+
+        toLast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToItem(mCrimes.size() - 1);
+            }
+        });
+
+        toFirst.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToItem(0);
+            }
+        });
+
         mCrimes = CrimeLab.get(this);
         l = Integer.MAX_VALUE;
         r = 0;
 
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentPagerAdapter(fm) {
+            @Nullable
+
+
             @Override
             public Fragment getItem(int position) {
                 Crime crime = mCrimes.getCrime(position);
@@ -60,7 +99,7 @@ public class CrimePagerActivity extends AppCompatActivity {
             }
         });
 
-        mViewPager.setCurrentItem(mCrimes.getCrimePos(crimeId));
+        goToItem(mCrimes.getCrimePos(crimeId));
     }
 
     private void updateResult(int pos) {
@@ -73,5 +112,17 @@ public class CrimePagerActivity extends AppCompatActivity {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
         intent.putExtra(EXTRA_CRIME_ID, crimeId);
         return intent;
+    }
+
+    private void goToItem(int pos) {
+        mViewPager.setCurrentItem(pos);
+        updateButtons(pos);
+    }
+
+    private void updateButtons(int pos) {
+        toFirst.setEnabled(true);
+        toLast.setEnabled(true);
+        if (pos == 0) toFirst.setEnabled(false);
+        if (pos == mCrimes.size() - 1) toLast.setEnabled(false);
     }
 }

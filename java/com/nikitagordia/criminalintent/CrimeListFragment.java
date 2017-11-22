@@ -124,7 +124,7 @@ public class CrimeListFragment extends Fragment {
         public void bind(Crime crime, int position) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(new Formatter().format("%1$tA, %1$tb %1$te, %1$tY ", mCrime.getDate()).toString());
+            mDateTextView.setText(mCrime.getFormatDate());
             button.setEnabled(!mCrime.isSolved());
             mSolved.setChecked(mCrime.isSolved());
         }

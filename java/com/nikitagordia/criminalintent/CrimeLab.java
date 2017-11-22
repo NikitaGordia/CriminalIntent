@@ -1,10 +1,12 @@
 package com.nikitagordia.criminalintent;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -30,6 +32,7 @@ public class CrimeLab {
         Random r = new Random();
         for (int i = 1; i <= 100; i++) {
             Crime crime = new Crime();
+            crime.setDate(new Date(1504990800000L + Math.abs(r.nextLong()) % 10000000000L));
             crime.setSolved(r.nextInt(4) == 0);
             crime.setRequiresPolice(r.nextInt(5) == 0);
             mCrimes.add(crime);
